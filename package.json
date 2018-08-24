@@ -1,0 +1,47 @@
+{
+  "name": "toy-robot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@git.realestate.com.au:recruiting/toy-robot.git",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn type-check && yarn build:1-remove && yarn build:2-babel && yarn build:3-tsc && yarn build:4-clean",
+    "build:1-remove": "rm -rf dist",
+    "build:2-babel": "babel --presets @babel/preset-typescript --extensions \".ts,.tsx\" src --out-dir dist --source-maps --copy-files",
+    "build:3-tsc": "tsc --emitDeclarationOnly",
+    "build:4-clean": "find . -path \"./dist/**/*.test.ts\" | xargs rm",
+    "lint": "tslint --project . -c tslint.yaml",
+    "lint-fix": "yarn lint --fix",
+    "start": "node dist/index.js",
+    "start:dev": "nodemon src/index.ts",
+    "test": "mocha -r ts-node/register test/index.ts './{,!(node_modules|dist)/**/}*.test.ts'",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "yargs": "^12.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-rc.2",
+    "@babel/core": "^7.0.0-rc.2",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-rc.2",
+    "@babel/preset-env": "^7.0.0-rc.2",
+    "@babel/preset-typescript": "^7.0.0-rc.2",
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^8.10.27",
+    "@types/sinon": "^5.0.1",
+    "@types/sinon-chai": "^3.2.0",
+    "@types/yargs": "^11.1.1",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "sinon": "^6.1.5",
+    "sinon-chai": "^3.2.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-microsoft-contrib": "^5.2.0",
+    "typescript": "^3.0.1"
+  }
+}
