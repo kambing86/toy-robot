@@ -10,7 +10,7 @@
     "build:1-remove": "rm -rf dist",
     "build:2-babel": "babel --presets @babel/preset-typescript --extensions \".ts,.tsx\" src --out-dir dist --source-maps --copy-files",
     "build:3-tsc": "tsc --emitDeclarationOnly",
-    "build:4-clean": "find . -path \"./dist/**/*.test.ts\" | xargs rm",
+    "build:4-clean": "find . -path \"./dist/*.test.ts\" | xargs rm",
     "lint": "tslint --project . -c tslint.yaml",
     "lint-fix": "yarn lint --fix",
     "start": "node dist/index.js",

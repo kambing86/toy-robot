@@ -8,7 +8,7 @@ export enum FACING {
 }
 export const TOTAL_FACING = 4;
 
-export function checkInRange(value, min, max) {
+export function checkInRange(value: number, min: number, max: number): boolean {
   if (value < min || value > max) {
     return false;
   }
