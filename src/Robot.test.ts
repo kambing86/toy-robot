@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {checkInRange, FACING, Robot} from './Robot';
+import {checkInRange, FACING, IPosition, Robot} from './Robot';
 import {Table} from './Table';
 
 describe('Robot.checkInRange', () => {
@@ -19,122 +19,170 @@ describe('Robot', () => {
   let robot: Robot;
 
   beforeEach(() => {
-    robot = new Robot(table);
+    robot = new Robot();
+    robot.assignTable(table);
+  });
+
+  describe('assignTable method', () => {
+    it('should reset position and facing direction if assign to new table', () => {
+      const position: IPosition = {x: 1, y: 1, facing: FACING.NORTH};
+      robot.place(position);
+      robot.move();
+      const newPosition = {...position, y: position.y + 1};
+      expect(robot.report()).to.eql({...position, y: position.y + 1});
+
+      robot.assignTable(new Table(10, 10));
+      expect(robot.report()).to.eql({x: 0, y: 0, facing: FACING.NORTH});
+    });
   });
 
   describe('place method', () => {
     it('should place in correct position and report correctly if the position is valid', () => {
-      robot.place({x: 1, y: 1, facing: FACING.NORTH});
-      expect(robot.report()).to.equal('1,1,NORTH');
-      robot.place({x: 2, y: 2, facing: FACING.EAST});
-      expect(robot.report()).to.equal('2,2,EAST');
-      robot.place({x: 3, y: 3, facing: FACING.SOUTH});
-      expect(robot.report()).to.equal('3,3,SOUTH');
-      robot.place({x: 4, y: 4, facing: FACING.WEST});
-      expect(robot.report()).to.equal('4,4,WEST');
+      let position: IPosition = {x: 1, y: 1, facing: FACING.NORTH};
+      robot.place(position);
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 2, y: 2, facing: FACING.EAST};
+      robot.place(position);
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 2, y: 2, facing: FACING.SOUTH};
+      robot.place(position);
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 2, y: 2, facing: FACING.WEST};
+      robot.place(position);
+      expect(robot.report()).to.eql(position);
     });
 
     it('should ignore and report correctly if the position is invalid', () => {
-      robot.place({x: 1, y: 1, facing: FACING.EAST});
-      expect(robot.report()).to.equal('1,1,EAST');
-      robot.place({x: 10, y: 10, facing: FACING.WEST});
-      expect(robot.report()).to.equal('1,1,EAST');
+      const position1 = {x: 1, y: 1, facing: FACING.EAST};
+      robot.place(position1);
+      expect(robot.report()).to.eql(position1);
+
+      const position2 = {x: 10, y: 10, facing: FACING.WEST};
+      robot.place(position2);
+      expect(robot.report()).to.eql(position1);
     });
   });
 
   describe('move method', () => {
     it('should move y+1 and report correctly if facing NORTH', () => {
-      robot.place({x: 1, y: 1, facing: FACING.NORTH});
+      const position: IPosition = {x: 1, y: 1, facing: FACING.NORTH};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('1,2,NORTH');
+      expect(robot.report()).to.eql({...position, y: position.y + 1});
     });
+
     it('should move x+1 and report correctly if facing EAST', () => {
-      robot.place({x: 1, y: 1, facing: FACING.EAST});
+      const position: IPosition = {x: 1, y: 1, facing: FACING.EAST};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('2,1,EAST');
+      expect(robot.report()).to.eql({...position, x: position.x + 1});
     });
+
     it('should move y-1 and report correctly if facing SOUTH', () => {
-      robot.place({x: 1, y: 1, facing: FACING.SOUTH});
+      const position: IPosition = {x: 1, y: 1, facing: FACING.SOUTH};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('1,0,SOUTH');
+      expect(robot.report()).to.eql({...position, y: position.y - 1});
     });
+
     it('should move x-1 and report correctly if facing WEST', () => {
-      robot.place({x: 1, y: 1, facing: FACING.WEST});
+      const position: IPosition = {x: 1, y: 1, facing: FACING.WEST};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('0,1,WEST');
+      expect(robot.report()).to.eql({...position, x: position.x - 1});
     });
+
     it('should not move and report correctly if no place to move', () => {
-      robot.place({x: 0, y: 4, facing: FACING.NORTH});
+      let position: IPosition = {x: 0, y: 4, facing: FACING.NORTH};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('0,4,NORTH');
-      robot.place({x: 4, y: 0, facing: FACING.EAST});
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 4, y: 0, facing: FACING.EAST};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('4,0,EAST');
-      robot.place({x: 4, y: 0, facing: FACING.SOUTH});
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 4, y: 0, facing: FACING.SOUTH};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('4,0,SOUTH');
-      robot.place({x: 0, y: 4, facing: FACING.WEST});
+      expect(robot.report()).to.eql(position);
+
+      position = {x: 0, y: 4, facing: FACING.WEST};
+      robot.place(position);
       robot.move();
-      expect(robot.report()).to.equal('0,4,WEST');
+      expect(robot.report()).to.eql(position);
     });
   });
 
   describe('left method', () => {
     it('should face WEST if it faced NORTH', () => {
-      robot.place({x: 0, y: 0, facing: FACING.NORTH});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.NORTH};
+      robot.place(position);
       robot.left();
-      expect(robot.report()).to.equal('0,0,WEST');
+      expect(robot.report()).to.eql({...position, facing: FACING.WEST});
     });
 
     it('should face SOUTH if it faced WEST', () => {
-      robot.place({x: 0, y: 0, facing: FACING.WEST});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.WEST};
+      robot.place(position);
       robot.left();
-      expect(robot.report()).to.equal('0,0,SOUTH');
+      expect(robot.report()).to.eql({...position, facing: FACING.SOUTH});
     });
 
     it('should face EAST if it faced SOUTH', () => {
-      robot.place({x: 0, y: 0, facing: FACING.SOUTH});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.SOUTH};
+      robot.place(position);
       robot.left();
-      expect(robot.report()).to.equal('0,0,EAST');
+      expect(robot.report()).to.eql({...position, facing: FACING.EAST});
     });
 
     it('should face NORTH if it faced EAST', () => {
-      robot.place({x: 0, y: 0, facing: FACING.EAST});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.EAST};
+      robot.place(position);
       robot.left();
-      expect(robot.report()).to.equal('0,0,NORTH');
+      expect(robot.report()).to.eql({...position, facing: FACING.NORTH});
     });
   });
 
   describe('right method', () => {
     it('should face EAST if it faced NORTH', () => {
-      robot.place({x: 0, y: 0, facing: FACING.NORTH});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.NORTH};
+      robot.place(position);
       robot.right();
-      expect(robot.report()).to.equal('0,0,EAST');
+      expect(robot.report()).to.eql({...position, facing: FACING.EAST});
     });
 
     it('should face SOUTH if it faced EAST', () => {
-      robot.place({x: 0, y: 0, facing: FACING.EAST});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.EAST};
+      robot.place(position);
       robot.right();
-      expect(robot.report()).to.equal('0,0,SOUTH');
+      expect(robot.report()).to.eql({...position, facing: FACING.SOUTH});
     });
 
     it('should face WEST if it faced SOUTH', () => {
-      robot.place({x: 0, y: 0, facing: FACING.SOUTH});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.SOUTH};
+      robot.place(position);
       robot.right();
-      expect(robot.report()).to.equal('0,0,WEST');
+      expect(robot.report()).to.eql({...position, facing: FACING.WEST});
     });
 
     it('should face NORTH if it faced WEST', () => {
-      robot.place({x: 0, y: 0, facing: FACING.WEST});
+      const position: IPosition = {x: 0, y: 0, facing: FACING.WEST};
+      robot.place(position);
       robot.right();
-      expect(robot.report()).to.equal('0,0,NORTH');
+      expect(robot.report()).to.eql({...position, facing: FACING.NORTH});
     });
   });
 
   describe('report method', () => {
     it('should always report correctly', () => {
-      robot.place({x: 1, y: 1, facing: FACING.NORTH});
-      expect(robot.report()).to.equal('1,1,NORTH');
+      const position: IPosition = {x: 1, y: 1, facing: FACING.NORTH};
+      robot.place(position);
+      expect(robot.report()).to.eql(position);
     });
   });
 });

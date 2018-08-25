@@ -4,7 +4,7 @@ const PLACE_REGEX = /^PLACE (\d),(\d),([^,]+)$/;
 
 export function execute(robot: Robot, command: string): void {
   switch (true) {
-    case PLACE_REGEX.test(command):
+    case PLACE_REGEX.test(command): {
       const matches = PLACE_REGEX.exec(command);
       if (matches) {
         const [, match1, match2, match3] = matches;
@@ -14,6 +14,7 @@ export function execute(robot: Robot, command: string): void {
         }
       }
       break;
+    }
     case command === 'MOVE':
       robot.move();
       break;
@@ -23,8 +24,10 @@ export function execute(robot: Robot, command: string): void {
     case command === 'RIGHT':
       robot.right();
       break;
-    case command === 'REPORT':
-      console.log(robot.report());
+    case command === 'REPORT': {
+      const {x, y, facing} = robot.report();
+      console.log(`${x},${y},${FACING[facing]}`);
       break;
+    }
   }
 }

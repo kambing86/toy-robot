@@ -7,7 +7,8 @@ import {Table} from './Table';
 
 function init() {
   const table = new Table(5, 5);
-  const robot = new Robot(table);
+  const robot = new Robot();
+  robot.assignTable(table);
   const argv = yargs.option('data', {required: true}).argv;
   const data = fs.readFileSync(path.join(process.cwd(), argv.data), 'utf8');
   const commands = data.split(/\n/);

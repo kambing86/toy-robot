@@ -9,7 +9,8 @@ describe('index.execute', () => {
   let robot: Robot;
 
   beforeEach(() => {
-    robot = new Robot(table);
+    robot = new Robot();
+    robot.assignTable(table);
   });
 
   it('should execute the valid PLACE command with the robot', () => {
